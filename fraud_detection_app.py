@@ -18,6 +18,8 @@ st.title("Kredi Kartı Dolandırıcılık Tespiti")
 @st.cache
 def load_data():
     data = pd.read_csv("creditcard.csv")
+    # Sütun adlarını temizle
+    data.columns = data.columns.str.strip()
     return data
 
 data = load_data()
@@ -35,17 +37,22 @@ st.sidebar.write("- **Class**: Hedef değişken (0: Normal, 1: Dolandırıcılı
 st.subheader("Veri Seti Genel Görünümü")
 st.write(data.head())
 
+# Eksik değer kontrolü ve temizleme
+st.write("Eksik değerlerin kontrolü")
+st.write(data.isnull().sum())
+data = data.dropna(subset=['Class', 'Amount'])
+
 # Görselleştirme: Dolandırıcılığın Zamanla Dağılımı
-#st.subheader("Dolandırıcılık İşlemlerinin Zamanla Dağılımı")
-#plt.figure(figsize=(10, 6))
-#sns.histplot(data[data['Class'] == 1]['Time'], bins=50, kde=True, color='red', label='Dolandırıcılık')
-#sns.histplot(data[data['Class'] == 0]['Time'], bins=50, kde=True, color='blue', label='Normal')
-#plt.title("Zaman Bazında İşlemler")
-#plt.xlabel("Zaman (saniye)")
-#plt.ylabel("İşlem Sayısı")
-#plt.legend()
-#st.pyplot(plt)
-#st.write("**Açıklama**: Bu grafik, dolandırıcılık ve normal işlemlerin zamanla nasıl dağıldığını gösterir. Dolandırıcılık işlemleri genellikle belirli zaman dilimlerinde yoğunlaşabilir.")
+st.subheader("Dolandırıcılık İşlemlerinin Zamanla Dağılımı")
+plt.figure(figsize=(10, 6))
+sns.histplot(data[data['Class'] == 1]['Time'], bins=50, kde=True, color='red', label='Dolandırıcılık')
+sns.histplot(data[data['Class'] == 0]['Time'], bins=50, kde=True, color='blue', label='Normal')
+plt.title("Zaman Bazında İşlemler")
+plt.xlabel("Zaman (saniye)")
+plt.ylabel("İşlem Sayısı")
+plt.legend()
+st.pyplot(plt)
+st.write("**Açıklama**: Bu grafik, dolandırıcılık ve normal işlemlerin zamanla nasıl dağıldığını gösterir. Dolandırıcılık işlemleri genellikle belirli zaman dilimlerinde yoğunlaşabilir.")
 
 # Görselleştirme: İşlem Tutarlarının Dağılımı
 st.subheader("İşlem Tutarlarının Dağılımı")
